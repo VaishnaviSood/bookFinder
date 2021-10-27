@@ -16,6 +16,12 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     print('im here');
     fetchData();
+    // books = [
+    //   Book(
+    //       author: 'Vaishnavi Sood',
+    //       name: 'Vaishnavi Sood',
+    //       date: '26 July, 2021'),
+    // ];
   }
 
   void fetchData() async {
@@ -23,40 +29,87 @@ class _MyHomePageState extends State<MyHomePage> {
 
     await firestore.collection('books').get().then((value) {
       value.docs.forEach((element) {
-        books.add(Book(
-            author: element['author'],
-            name: element['name'],
-            date: element['date']));
+        setState(() {
+          books.add(Book(
+              author: element['author'],
+              name: element['name'],
+              date: element['date']));
+        });
       });
     });
   }
 
+  String bookname = '';
   @override
   Widget build(BuildContext context) {
+    Size deviceSize = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: Text("Book Finder"),
         backgroundColor: Colors.deepPurple,
       ),
       body: SingleChildScrollView(
-        child: Container(
-          height: 400,
-          child: ListView.builder(
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text('Devdas'),
-                subtitle: Column(
-                  children: [
-                    Text('By Sharat Chandra ChattoPadhyay'),
-                    Text('28 April 1945'),
-                  ],
-                ),
-                isThreeLine: true,
-              );
-            },
-          ),
+        child: Column(
+          children: [
+            TextField(
+              onChanged: (val) {
+                setState(() {
+                  bookname = val.toLowerCase();
+                  print(bookname);
+                });
+              },
+              showCursor: true,
+              //cursorColor: Color(0xFFFF722843),
+              style: TextStyle(color: Colors.black),
+              decoration: InputDecoration(
+                  hintStyle: TextStyle(
+                    fontSize: 17,
+                  ),
+                  contentPadding: EdgeInsets.only(top: 8),
+                  hintText: "Search",
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(40.0)))),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height,
+              child: ListView.builder(
+                itemCount: books.length,
+                itemBuilder: (context, index) {
+                  String searchname = books[index].name;
+                  String searchauthor = books[index].author;
+                  return bookname.isEmpty
+                      ? Rows(books: books, index: index)
+                      : searchname.toLowerCase().startsWith(bookname) ||
+                              searchauthor.toLowerCase().startsWith(bookname)
+                          ? Rows(books: books, index: index)
+                          : Padding(padding: EdgeInsets.all(0));
+                },
+              ),
+            ),
+          ],
         ),
       ),
+    );
+  }
+}
+
+class Rows extends StatelessWidget {
+  Rows({required this.books, required this.index});
+  final List<Book> books;
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(books[index].name),
+      subtitle: Column(
+        children: [
+          Text(books[index].author),
+          Text(books[index].date),
+        ],
+      ),
+      isThreeLine: true,
     );
   }
 }
