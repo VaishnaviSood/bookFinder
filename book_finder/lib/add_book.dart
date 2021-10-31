@@ -13,7 +13,7 @@ class _AddBookState extends State<AddBook> {
   TextEditingController _nameController = TextEditingController();
   TextEditingController _authorController = TextEditingController();
   TextEditingController _dateController = TextEditingController();
-
+  bool flag = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,16 +49,15 @@ class _AddBookState extends State<AddBook> {
               TextFormField(
                   controller: _dateController,
                   decoration: InputDecoration(
-                      // focusedBorder: UnderlineInputBorder(
-                      //     borderSide: BorderSide(
-                      //         color: primaryColor, width: 2)),
-                      // enabledBorder: UnderlineInputBorder(
-                      //     borderSide: BorderSide(
-                      //         color: primaryColor, width: 2)),
-                      // hintText: 'Pick Your Date',
-                      // hintStyle: TextStyle(
-                      //     fontSize: deviceSize.height * 0.02),
-                      ),
+                    contentPadding: EdgeInsets.fromLTRB(20, 8, 8, 8),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                        borderSide: BorderSide(color: Colors.white24)),
+                    labelText: 'Pick the publishing date',
+                    labelStyle: TextStyle(fontWeight: FontWeight.w500),
+                    // hintText: 'Pick Your Date',
+                    // hintStyle: TextStyle(fontSize: 17),
+                  ),
                   onTap: () async {
                     var date = await showDatePicker(
                         // builder: (BuildContext context,
@@ -80,6 +79,40 @@ class _AddBookState extends State<AddBook> {
                         lastDate: DateTime(2100));
                     _dateController.text = date.toString().substring(0, 10);
                   }),
+              Container(
+                decoration: BoxDecoration(
+                    color: flag ? Colors.deepPurple : Colors.grey[300],
+                    borderRadius: BorderRadius.circular(15)),
+                child: MaterialButton(
+                  child: Text(flag ? 'Add Book' : 'Book Added',
+                      style: TextStyle(color: Colors.white)),
+                  onPressed: flag
+                      ? () {
+                          FirebaseFirestore.instance.collection('books').add({
+                            'author': _authorController.text,
+                            'name': _nameController.text,
+                            'date': _dateController.text,
+                          }).then((value) {
+                            setState(() {
+                              flag = false;
+                            });
+                          });
+                        }
+                      : () {},
+                ),
+              ),
+              flag == false
+                  ? TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _authorController.clear();
+                          _nameController.clear();
+                          _dateController.clear();
+                          flag = true;
+                        });
+                      },
+                      child: Text('Add another Book'))
+                  : Padding(padding: EdgeInsets.all(0)),
             ],
           )),
         ),

@@ -1,3 +1,4 @@
+import 'package:book_finder/add_book.dart';
 import 'package:book_finder/book_model.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -70,6 +71,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   prefixIcon: Icon(Icons.search),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(40.0)))),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                  color: Colors.deepPurple,
+                  borderRadius: BorderRadius.circular(15)),
+              child: MaterialButton(
+                  child:
+                      Text('Add Book', style: TextStyle(color: Colors.white)),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => AddBook()));
+                  }),
             ),
             Container(
               height: MediaQuery.of(context).size.height,
