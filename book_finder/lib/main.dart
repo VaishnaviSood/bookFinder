@@ -13,6 +13,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: new ThemeData(
+        colorScheme: ColorScheme.light(
+            primary: Colors.deepPurple, secondary: Colors.deepPurple),
+        accentColor: Colors.deepPurple,
+        primaryColor: Colors.deepPurple,
+        fontFamily: 'Lato',
+      ),
       home: MyHomePage(),
     );
   }
